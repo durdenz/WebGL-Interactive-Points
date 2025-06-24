@@ -11,7 +11,13 @@ let raycaster, intersects;
 let pointer, INTERSECTED;
 let fragmentshader, vertexshader;
 
+await initShaders();
 init();
+
+async function initShaders() {
+    fragmentshader = await (await fetch('shaders/shader.frag')).text();
+    vertexshader = await (await fetch('shaders/shader.vert')).text();
+}
 
 async function init() {
 
@@ -65,9 +71,8 @@ async function init() {
             pointTexture: { value: new THREE.TextureLoader().load( 'textures/sprites/disc.png' ) },
             alphaTest: { value: 0.9 }
         },
-        vertexShader: document.getElementById( 'vertexshader' ).textContent,
-        fragmentShader: document.getElementById( 'fragmentshader' ).textContent
-
+        vertexShader: vertexshader,
+        fragmentShader: fragmentshader 
     } );
 
     //
