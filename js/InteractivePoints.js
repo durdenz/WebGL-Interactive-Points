@@ -33,7 +33,7 @@ async function init() {
 
     // G4 062725 Use GLB Geometry instead of BoxGeometry
     // let boxGeometry = new THREE.BoxGeometry( 200, 200, 200, 16, 16, 16 );
-    let boxGeometry = await getGeometry();
+    let boxGeometry = await getGLBGeometry();
 
 
     // if normal and uv attributes are not removed, mergeVertices() can't consolidate identical vertices with different normal/uv data
@@ -165,9 +165,9 @@ function render() {
 
 // G4 062725 Start GLB Load Section
 
-let geometry;
+let glbGeometry;
 
-async function loadGLTFModels() {
+async function loadGLBModel() {
     const glbLoader = new GLTFLoader();
     const glbPath = "models/CG.glb";
 
@@ -178,7 +178,7 @@ async function loadGLTFModels() {
           const model = gltf.scene;
           model.traverse((child) => {
             if (child.isMesh) {
-              geometry = child.geometry;
+              glbGeometry = child.geometry;
               console.log(`IsMesh`);
             }
           });
@@ -197,12 +197,12 @@ async function loadGLTFModels() {
   }
 }
 
-async function getGeometry() {
+async function getGLBGeometry() {
   const size = 30.0;
 
-  await loadGLTFModels();
+  await loadGLBModel();
 
-  const geo = geometry.clone();
+  const geo = glbGeometry.clone();
   geo.scale(size, size, size);
 
   return geo;
