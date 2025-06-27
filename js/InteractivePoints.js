@@ -198,9 +198,12 @@ async function loadGLTFModels() {
 }
 
 async function getGeometry() {
+  const size = 30.0;
+
   await loadGLTFModels();
 
   const geo = geometry.clone();
+  geo.scale(size, size, size);
 
   return geo;
 }
