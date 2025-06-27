@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import * as BufferGeometryUtils from 'three/addons/utils/BufferGeometryUtils.js';
+import { GLTFLoader } from 'jsm/loaders/GLTFLoader.js'; // G4 062725
 
 let renderer, scene, camera;
 
@@ -30,7 +31,10 @@ async function init() {
 
     //
 
-    let boxGeometry = new THREE.BoxGeometry( 200, 200, 200, 16, 16, 16 );
+    // G4 062725 Use GLB Geometry instead of BoxGeometry
+    // let boxGeometry = new THREE.BoxGeometry( 200, 200, 200, 16, 16, 16 );
+    let boxGeometry = await getGeometry();
+
 
     // if normal and uv attributes are not removed, mergeVertices() can't consolidate identical vertices with different normal/uv data
 
@@ -158,3 +162,47 @@ function render() {
     renderer.render( scene, camera );
 
 }
+
+// G4 062725 Start GLB Load Section
+
+let geometry;
+
+async function loadGLTFModels() {
+    const glbLoader = new GLTFLoader();
+    const glbPath = "models/CG.glb";
+
+    let promise = new Promise((resolve, reject) => {
+      glbLoader.load(
+        glbPath,
+        (gltf) => {
+          const model = gltf.scene;
+          model.traverse((child) => {
+            if (child.isMesh) {
+              geometry = child.geometry;
+              console.log(`IsMesh`);
+            }
+          });
+          resolve();
+        },
+        undefined,
+        (error) => reject(error)
+      );
+    })
+
+  try {
+    await promise;
+    console.log("All GLTF models loaded successfully.");
+  } catch (error) {
+    console.error("Error loading GLTF models:", error);
+  }
+}
+
+async function getGeometry() {
+  await loadGLTFModels();
+
+  const geo = geometry.clone();
+
+  return geo;
+}
+
+// G4 062725 End GLB Load Section
